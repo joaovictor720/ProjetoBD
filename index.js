@@ -28,12 +28,33 @@ variavel = 123;
 
 app.use(express.json())
 
-/**
- * QUERIES
-*/
+/************
+ * QUERIES *
+************/
 
-// CREATING DATA
-// 
+/** CREATING DATA:
+ *  
+ * Register a client: INSERT INTO client (name, type, email, password) VALUES ($1, $2, $3, $4);
+ * Register a product: INSERT INTO product (name, price, category, color, size) VALUES ($1, $2, $3, $4, $5);
+ * Register a purchase: INSERT INTO purchase (client_id) VALUES ($1);
+ * Register the list of products of a purchase: INSERT INTO purchase_products (purchase_id, product_id) VALUES ($1, $2);
+ * 
+*/ 
+
+/** RETRIEVING DATA:
+ * 
+ * Get all products: SELECT * FROM product;
+ * Get products by name: SELECT * FROM product WHERE name LIKE(%$1%);
+ * 
+ */
+
+/** UPDATING DATA:
+ * 
+ */
+
+/** DELETING DATA:
+ * 
+ */
 
 var clients = pool.query("INSERT INTO client (name, type, email, password) VALUES ('Leo', 'Client', 'leo@teste.com', 'password123');");
 console.log(clients);
