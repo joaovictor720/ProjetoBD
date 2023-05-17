@@ -34,7 +34,7 @@ CREATE TABLE product(
 CREATE TABLE purchase_products(
     purchase_id INTEGER,
     product_id INTEGER,
-    count INTEGER
+    count INTEGER,
 
     CONSTRAINT product_list_pk PRIMARY KEY (purchase_id, product_id),
     CONSTRAINT purchase_fk FOREIGN KEY (purchase_id) REFERENCES purchase (id),
