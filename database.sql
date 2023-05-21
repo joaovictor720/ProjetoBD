@@ -8,10 +8,10 @@ CREATE DATABASE project_db;
 -- Creating all tables
 CREATE TABLE client(
     id SERIAL PRIMARY KEY,
-    name VARCHAR(50),
-    type VARCHAR(20),
-    email VARCHAR(50),
-    password VARCHAR(50)
+    name VARCHAR(50) NOT NULL,
+    type VARCHAR(20) NOT NULL,
+    email VARCHAR(50) NOT NULL,
+    password VARCHAR(50) NOT NULL
 );
 
 CREATE TABLE purchase(
@@ -24,11 +24,11 @@ CREATE TABLE purchase(
 
 CREATE TABLE product(
     id SERIAL PRIMARY KEY,
-    name VARCHAR(50),
-    price FLOAT,
-    category VARCHAR(15),
-    color VARCHAR(10),
-    size VARCHAR(1)
+    name VARCHAR(50) NOT NULL,
+    price FLOAT NOT NULL,
+    category VARCHAR(15) NOT NULL,
+    color VARCHAR(10) NOT NULL,
+    size VARCHAR(1) NOT NULL
 );
 
 CREATE TABLE purchase_products(

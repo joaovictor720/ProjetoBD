@@ -45,6 +45,7 @@ app.use(express.json())
  * 
  * Get all products: SELECT * FROM product;
  * Get products by name: SELECT * FROM product WHERE name LIKE(%$1%);
+ * Get user password and type by email: SELECT password, type FROM client WHERE email = '$1';
  * 
  */
 
