@@ -10,7 +10,7 @@ CREATE TABLE client(
     id SERIAL PRIMARY KEY,
     name VARCHAR(50) NOT NULL,
     type VARCHAR(20) NOT NULL,
-    email VARCHAR(50) NOT NULL,
+    email VARCHAR(50) UNIQUE NOT NULL,
     password VARCHAR(50) NOT NULL
 );
 
@@ -28,7 +28,8 @@ CREATE TABLE product(
     price FLOAT NOT NULL,
     category VARCHAR(15) NOT NULL,
     color VARCHAR(10) NOT NULL,
-    size VARCHAR(1) NOT NULL
+    size VARCHAR(1) NOT NULL,
+    count INTEGER NOT NULL
 );
 
 CREATE TABLE purchase_products(
