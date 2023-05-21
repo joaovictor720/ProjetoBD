@@ -10,32 +10,32 @@ app.use(express.json())
 
 /** CREATING DATA:
  *  
- * Register a client: INSERT INTO client (name, type, email, password) VALUES (${name}, ${type}, ${email}, ${password});
- * Register a product: INSERT INTO product (name, price, category, color, size) VALUES (${name}, ${price}, ${category}, ${color}, ${size});
- * Register a purchase: INSERT INTO purchase (client_id) VALUES (${id});
- * Register the list of products of a purchase: INSERT INTO purchase_products (purchase_id, product_id) VALUES (${purchase_id}, ${product_id});
+ X Register a client: INSERT INTO users (name, type, email, password) VALUES ('${name}', '${type}', '${email}', '${password}');
+ X Register a product: INSERT INTO product (name, price, category, color, size) VALUES ('${name}', ${price}, '${category}', '${color}', '${size}');
+ X Register a purchase: INSERT INTO purchase (client_id) VALUES (${id});
+ X Register the list of products of a purchase: INSERT INTO purchase_products (purchase_id, product_id, count) VALUES (${purchase_id}, ${product_id}, ${count});
  * 
 */ 
 
 /** RETRIEVING DATA:
  * 
- * Get all products available: SELECT * FROM product;
- * Get products by name: SELECT * FROM product WHERE name LIKE(%${name}%);
- * Get products by category: SELECT * FROM product WHERE category LIKE(%${category}%);
- * Get user password and type by email: SELECT * FROM client WHERE email = '${email}';
+ X Get all products available: SELECT * FROM product;
+ X Get products by name: SELECT * FROM product WHERE name LIKE(%${name}%);
+ X Get products by category: SELECT * FROM product WHERE category LIKE(%${category}%);
+ X Get users by email: SELECT * FROM users WHERE email = '${email}';
  * 
  */
 
 /** UPDATING DATA:
  * 
- * Update product price: UPDATE product SET price = ${price} WHERE id = ${id};
+ X Update product price: UPDATE product SET price = ${price} WHERE id = ${id};
  * 
  */
 
 /** DELETING DATA:
  * 
- * Deleting a product by 'id': DELETE FROM product WHERE id = ${id};
- * Deleting a product by 'name': DELETE FROM product WHERE name LIKE(%${name}%);
+ X Deleting a product by 'id': DELETE FROM product WHERE id = ${id};
+ X Deleting a product by 'name': DELETE FROM product WHERE name LIKE(%${name}%);
  * 
  */
 
@@ -57,7 +57,11 @@ app.get('/products', async (req, res) => {
 app.get('/products/name/:name', async (req, res) => {
   try {
     const { name } = req.params;
-    const products = await database.query(`SELECT * FROM product WHERE name LIKE(%${name}%);`)
+    const products = await database.query(
+      `SELECT * 
+      FROM product 
+      WHERE name LIKE(%${name}%);`
+    );
     res.json(products.rows);
   } catch (error) {
     console.error(error.message);
@@ -68,7 +72,11 @@ app.get('/products/name/:name', async (req, res) => {
 app.get('/products/category/:category', async (req, res) => {
   try {
     const { category } = req.params;
-    const products = await database.query(`SELECT * FROM product WHERE name LIKE(%${category}%);`)
+    const products = await database.query(
+      `SELECT * 
+      FROM product 
+      WHERE name LIKE(%${category}%);`
+    );
     res.json(products.rows);
   } catch (error) {
     console.error(error.message);
@@ -79,19 +87,117 @@ app.get('/products/category/:category', async (req, res) => {
 app.get('/login', async (req, res) => {
   try {
     const { email, password } = req.body;
-    const user = await database.query(`SELECT * FROM client WHERE email = '${email}';`);
+    const user = await database.query(
+      `SELECT * 
+      FROM users 
+      WHERE email = '${email}';`
+    );
 
     if (!user){
       return res.status(401).json({ message: 'Invalid credentials' });
     }
 
+    // If the password is invalid, return an error response
     if (password !== user.fields.password) {
-      // If the password is invalid, return an error response
       return res.status(401).json({ message: 'Invalid credentials' });
     }
 
     res.json({ userType: `${user.fields.type}` });
 
+  } catch (error) {
+    console.error(error.message);
+  }
+});
+
+// Register a new user
+app.post('/users', async (req, res) => {
+  try {
+    const { name, type, email, password } = req.body;
+    const newUser = await database.query(
+      `INSERT INTO users (name, type, email, password) 
+      VALUES ('${name}', '${type}', '${email}', '${password}');`
+      );
+    res.json(newUser);
+  } catch (error) {
+    console.log(error.message);
+  }
+});
+
+// Register a new product
+app.post('/products', async (req, res) => {
+  try {
+    const { name, price, category, color, size } = req.body;
+    const newProduct = await database.query(
+      `INSERT INTO product (name, price, category, color, size) 
+      VALUES ('${name}', ${price}, '${category}', '${color}', '${size}');`
+    );
+    res.json(newProduct);
+  } catch (error) {
+    console.log(error.message);
+  }
+});
+
+// Register a purchase
+app.post('/purchases', async (req, res) => {
+  try {
+    const { clientId, boughtProducts } = req.body;
+    const newPurchase = await database.query(
+      `INSERT INTO purchase (client_id) 
+      VALUES (${clientId})
+      RETURNING id;`
+    );
+
+    boughtProducts.forEach(async (boughtProduct) => {
+      await database.query(
+        `INSERT INTO purchase_products (purchase_id, product_id, count) 
+        VALUES (${newPurchase.fields.id}, ${boughtProduct.id}, ${boughtProduct.count});`
+      );
+    });
+    
+    res.json(newPurchase);
+  } catch (error) {
+    console.log(error.message);
+  }
+});
+
+// Update a product price
+app.put('/products/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { price } = req.body;
+
+    const updatedProduct = await database.query(
+      `UPDATE product 
+      SET price = ${price} 
+      WHERE id = ${id};`
+    );
+    res.json(updatedProduct);
+  } catch (error) {
+    console.error(error.message);
+  }
+});
+
+// Delete a product
+app.delete('/products/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const deletedProduct = await database.query(
+      `DELETE FROM product WHERE id = ${id};`
+    );
+    res.json(deletedProduct);
+  } catch (error) {
+    console.error(error.message);
+  }
+});
+
+// Delete a product by name
+app.delete('/products/:name', async (req, res) => {
+  try {
+    const { name } = req.params;
+    const deletedProduct = await database.query(
+      `DELETE FROM product WHERE name LIKE(%${name}%);`
+    );
+    res.json(deletedProduct);
   } catch (error) {
     console.error(error.message);
   }

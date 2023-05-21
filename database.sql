@@ -6,7 +6,7 @@ CREATE DATABASE project_db;
 \c project_db
 
 -- Creating all tables
-CREATE TABLE client(
+CREATE TABLE users(
     id SERIAL PRIMARY KEY,
     name VARCHAR(50) NOT NULL,
     type VARCHAR(20) NOT NULL,
