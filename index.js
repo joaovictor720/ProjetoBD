@@ -75,7 +75,7 @@ app.get('/products/category/:category', async (req, res) => {
     const products = await database.query(
       `SELECT * 
       FROM product 
-      WHERE name LIKE(%${category}%);`
+      WHERE category LIKE(%${category}%);`
     );
     res.json(products.rows);
   } catch (error) {
@@ -102,7 +102,7 @@ app.get('/login', async (req, res) => {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
 
-    res.json({ userType: `${user.fields.type}` });
+    res.json(user);
 
   } catch (error) {
     console.error(error.message);
@@ -152,6 +152,9 @@ app.post('/purchases', async (req, res) => {
         `INSERT INTO purchase_products (purchase_id, product_id, count) 
         VALUES (${newPurchase.fields.id}, ${boughtProduct.id}, ${boughtProduct.count});`
       );
+      await database.query(
+        ``
+      );
     });
     
     res.json(newPurchase);
@@ -160,15 +163,15 @@ app.post('/purchases', async (req, res) => {
   }
 });
 
-// Update a product price
+// Update a product
 app.put('/products/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    const { price } = req.body;
+    const { product } = req.body;
 
     const updatedProduct = await database.query(
       `UPDATE product 
-      SET price = ${price} 
+      SET name = ${procuct.name}, price = ${product.price}, category = ${product.category}, color = ${product.color}, size = ${product.size}, count = ${product.count}
       WHERE id = ${id};`
     );
     res.json(updatedProduct);
