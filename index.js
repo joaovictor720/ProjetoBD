@@ -78,7 +78,7 @@ app.get('/products/category/:category', async (req, res) => {
 // Validate user credentials
 app.get('/login', async (req, res) => {
   try {
-    const { email, password } = req.query;
+    const { email, password } = req.body;
     const user = await database.query(`SELECT * FROM client WHERE email = '${email}';`);
 
     if (!user){
