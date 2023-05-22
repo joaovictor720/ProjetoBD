@@ -5,6 +5,13 @@ CREATE DATABASE project_db;
 -- Connecting to the created database
 \c project_db
 
+-- Deleting all possibly existing tables
+DROP TABLE IF EXISTS purchase_products CASCADE;
+DROP TABLE IF EXISTS purchase CASCADE;
+DROP TABLE IF EXISTS client CASCADE;
+DROP TABLE IF EXISTS users CASCADE;
+DROP TABLE IF EXISTS product CASCADE;
+
 -- Creating all tables
 CREATE TABLE users(
     id SERIAL PRIMARY KEY,
@@ -16,10 +23,10 @@ CREATE TABLE users(
 
 CREATE TABLE purchase(
     id SERIAL PRIMARY KEY,
-    client_id SERIAL,
+    user_id SERIAL,
 
-    CONSTRAINT purchase_client_fk FOREIGN KEY (client_id)
-    REFERENCES client (id)
+    CONSTRAINT purchase_client_fk FOREIGN KEY (user_id)
+    REFERENCES users (id)
 );
 
 CREATE TABLE product(
