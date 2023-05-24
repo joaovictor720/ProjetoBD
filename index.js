@@ -115,8 +115,9 @@ app.post('/users', async (req, res) => {
     const { name, type, email, password } = req.body;
     const newUser = await database.query(
       `INSERT INTO users (name, type, email, password) 
-      VALUES ('${name}', '${type}', '${email}', '${password}');`
-      );
+      VALUES ('${name}', '${type}', '${email}', '${password}')
+      RETURNING id, name, type, email;`
+    );
     res.json(newUser);
   } catch (error) {
     console.log(error.message);
