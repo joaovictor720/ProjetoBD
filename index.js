@@ -52,7 +52,7 @@ app.get('/products/category/:category', async (req, res) => {
 });
 
 // Validate user credentials
-app.get('/login', async (req, res) => {
+app.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body;
     const user = await database.query(
