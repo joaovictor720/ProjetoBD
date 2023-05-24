@@ -61,10 +61,6 @@ app.post('/login', async (req, res) => {
       WHERE email = '${email}';`
     );
 
-    if (!user){
-      return res.status(401).json({ message: 'Invalid credentials' });
-    }
-
     // If the password is invalid, return an error response
     if (password !== user.rows[0].password) {
       return res.status(401).json({ message: 'Invalid credentials' });
@@ -74,7 +70,7 @@ app.post('/login', async (req, res) => {
 
   } catch (error) {
     console.error(error.message);
-    res.send(error.message);
+    res.status(401).json({ message: '' });
   }
 });
 
