@@ -2,42 +2,7 @@ const express = require('express');
 const database = require('./dbConnection');
 const app = express();
 
-app.use(express.json())
-
-/************
- * QUERIES *
-************/
-
-/** CREATING DATA:
- *  
- X Register a client: INSERT INTO users (name, type, email, password) VALUES ('${name}', '${type}', '${email}', '${password}');
- X Register a product: INSERT INTO product (name, price, category, color, size) VALUES ('${name}', ${price}, '${category}', '${color}', '${size}');
- X Register a purchase: INSERT INTO purchase (client_id) VALUES (${id});
- X Register the list of products of a purchase: INSERT INTO purchase_products (purchase_id, product_id, count) VALUES (${purchase_id}, ${product_id}, ${count});
- * 
-*/ 
-
-/** RETRIEVING DATA:
- * 
- X Get all products available: SELECT * FROM product;
- X Get products by name: SELECT * FROM product WHERE name LIKE(%${name}%);
- X Get products by category: SELECT * FROM product WHERE category LIKE(%${category}%);
- X Get users by email: SELECT * FROM users WHERE email = '${email}';
- * 
- */
-
-/** UPDATING DATA:
- * 
- X Update product price: UPDATE product SET price = ${price} WHERE id = ${id};
- * 
- */
-
-/** DELETING DATA:
- * 
- X Deleting a product by 'id': DELETE FROM product WHERE id = ${id};
- X Deleting a product by 'name': DELETE FROM product WHERE name LIKE(%${name}%);
- * 
- */
+app.use(express.json());
 
 /**********
  * ROUTES *
@@ -50,6 +15,7 @@ app.get('/products', async (req, res) => {
     res.json(products.rows);
   } catch (err) {
     console.error(err.message);
+    res.send(error.message);
   }
 });
 
@@ -65,6 +31,7 @@ app.get('/products/name/:name', async (req, res) => {
     res.json(products.rows);
   } catch (error) {
     console.error(error.message);
+    res.send(error.message);
   }
 });
 
@@ -80,6 +47,7 @@ app.get('/products/category/:category', async (req, res) => {
     res.json(products.rows);
   } catch (error) {
     console.error(error.message);
+    res.send(error.message);
   }
 });
 
@@ -106,6 +74,7 @@ app.get('/login', async (req, res) => {
 
   } catch (error) {
     console.error(error.message);
+    res.send(error.message);
   }
 });
 
@@ -120,7 +89,8 @@ app.post('/users', async (req, res) => {
     );
     res.json(newUser);
   } catch (error) {
-    console.log(error.message);
+    console.error(error.message);
+    res.send(error.message);
   }
 });
 
@@ -134,7 +104,8 @@ app.post('/products', async (req, res) => {
     );
     res.json(newProduct);
   } catch (error) {
-    console.log(error.message);
+    console.error(error.message);
+    res.send(error.message);
   }
 });
 
@@ -154,13 +125,16 @@ app.post('/purchases', async (req, res) => {
         VALUES (${newPurchase.fields.id}, ${boughtProduct.id}, ${boughtProduct.count});`
       );
       await database.query(
-        ``
+        `UPDATE product
+        SET count = count - ${boughtProduct.count}
+        WHERE id = ${boughtProduct.id};`
       );
     });
     
     res.json(newPurchase);
   } catch (error) {
-    console.log(error.message);
+    console.error(error.message);
+    res.send(error.message);
   }
 });
 
@@ -178,6 +152,7 @@ app.put('/products/:id', async (req, res) => {
     res.json(updatedProduct);
   } catch (error) {
     console.error(error.message);
+    res.send(error.message);
   }
 });
 
@@ -191,6 +166,7 @@ app.delete('/products/:id', async (req, res) => {
     res.json(deletedProduct);
   } catch (error) {
     console.error(error.message);
+    res.send(error.message);
   }
 });
 
@@ -204,6 +180,7 @@ app.delete('/products/:name', async (req, res) => {
     res.json(deletedProduct);
   } catch (error) {
     console.error(error.message);
+    res.send(error.message);
   }
 });
 
