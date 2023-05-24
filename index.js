@@ -66,7 +66,7 @@ app.post('/login', async (req, res) => {
     }
 
     // If the password is invalid, return an error response
-    if (password !== user.fields.password) {
+    if (password !== user.rows[0].password) {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
 
@@ -122,7 +122,7 @@ app.post('/purchases', async (req, res) => {
     boughtProducts.forEach(async (boughtProduct) => {
       await database.query(
         `INSERT INTO purchase_products (purchase_id, product_id, count) 
-        VALUES (${newPurchase.fields.id}, ${boughtProduct.id}, ${boughtProduct.count});`
+        VALUES (${newPurchase.rows[0].id}, ${boughtProduct.id}, ${boughtProduct.count});`
       );
       await database.query(
         `UPDATE product
