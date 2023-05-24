@@ -87,7 +87,7 @@ app.post('/users', async (req, res) => {
       VALUES ('${name}', '${type}', '${email}', '${password}')
       RETURNING id, name, type, email;`
     );
-    res.json(newUser.rows);
+    res.json(newUser.rows[0]);
   } catch (error) {
     console.error(error.message);
     res.send(error.message);
@@ -102,7 +102,7 @@ app.post('/products', async (req, res) => {
       `INSERT INTO product (name, price, category, color, size) 
       VALUES ('${name}', ${price}, '${category}', '${color}', '${size}');`
     );
-    res.json(newProduct.rows);
+    res.json(newProduct.rows[0]);
   } catch (error) {
     console.error(error.message);
     res.send(error.message);
