@@ -70,7 +70,7 @@ app.get('/login', async (req, res) => {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
 
-    res.json(user);
+    res.json(user.rows);
 
   } catch (error) {
     console.error(error.message);
@@ -87,7 +87,7 @@ app.post('/users', async (req, res) => {
       VALUES ('${name}', '${type}', '${email}', '${password}')
       RETURNING id, name, type, email;`
     );
-    res.json(newUser);
+    res.json(newUser.rows);
   } catch (error) {
     console.error(error.message);
     res.send(error.message);
@@ -102,7 +102,7 @@ app.post('/products', async (req, res) => {
       `INSERT INTO product (name, price, category, color, size) 
       VALUES ('${name}', ${price}, '${category}', '${color}', '${size}');`
     );
-    res.json(newProduct);
+    res.json(newProduct.rows);
   } catch (error) {
     console.error(error.message);
     res.send(error.message);
@@ -131,7 +131,7 @@ app.post('/purchases', async (req, res) => {
       );
     });
     
-    res.json(newPurchase);
+    res.json(newPurchase.rows);
   } catch (error) {
     console.error(error.message);
     res.send(error.message);
@@ -149,7 +149,7 @@ app.put('/products/:id', async (req, res) => {
       SET name = ${procuct.name}, price = ${product.price}, category = ${product.category}, color = ${product.color}, size = ${product.size}, count = ${product.count}
       WHERE id = ${id};`
     );
-    res.json(updatedProduct);
+    res.json(updatedProduct.rows);
   } catch (error) {
     console.error(error.message);
     res.send(error.message);
@@ -163,7 +163,7 @@ app.delete('/products/:id', async (req, res) => {
     const deletedProduct = await database.query(
       `DELETE FROM product WHERE id = ${id};`
     );
-    res.json(deletedProduct);
+    res.json(deletedProduct.rows);
   } catch (error) {
     console.error(error.message);
     res.send(error.message);
@@ -177,7 +177,7 @@ app.delete('/products/:name', async (req, res) => {
     const deletedProduct = await database.query(
       `DELETE FROM product WHERE name LIKE(%${name}%);`
     );
-    res.json(deletedProduct);
+    res.json(deletedProduct.rows);
   } catch (error) {
     console.error(error.message);
     res.send(error.message);
