@@ -90,7 +90,7 @@ app.post('/users', async (req, res) => {
     res.json(newUser.rows[0]);
   } catch (error) {
     console.error(error.message);
-    res.send(error.message);
+    res.status(401).json({ message: 'User already exists' });
   }
 });
 
