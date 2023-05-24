@@ -70,7 +70,7 @@ app.post('/login', async (req, res) => {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
 
-    res.json(user.rows);
+    res.json(user.rows[0]);
 
   } catch (error) {
     console.error(error.message);
@@ -130,8 +130,8 @@ app.post('/purchases', async (req, res) => {
         WHERE id = ${boughtProduct.id};`
       );
     });
-    
-    res.json(newPurchase.rows);
+
+    res.json(newPurchase.rows[0]);
   } catch (error) {
     console.error(error.message);
     res.send(error.message);
@@ -149,7 +149,7 @@ app.put('/products/:id', async (req, res) => {
       SET name = ${procuct.name}, price = ${product.price}, category = ${product.category}, color = ${product.color}, size = ${product.size}, count = ${product.count}
       WHERE id = ${id};`
     );
-    res.json(updatedProduct.rows);
+    res.json(updatedProduct.rows[0]);
   } catch (error) {
     console.error(error.message);
     res.send(error.message);
@@ -161,9 +161,10 @@ app.delete('/products/:id', async (req, res) => {
   try {
     const { id } = req.params;
     const deletedProduct = await database.query(
-      `DELETE FROM product WHERE id = ${id};`
+      `DELETE FROM product 
+      WHERE id = ${id};`
     );
-    res.json(deletedProduct.rows);
+    res.json(deletedProduct.rows[0]);
   } catch (error) {
     console.error(error.message);
     res.send(error.message);
@@ -175,9 +176,10 @@ app.delete('/products/:name', async (req, res) => {
   try {
     const { name } = req.params;
     const deletedProduct = await database.query(
-      `DELETE FROM product WHERE name LIKE(%${name}%);`
+      `DELETE FROM product 
+      WHERE name LIKE(%${name}%);`
     );
-    res.json(deletedProduct.rows);
+    res.json(deletedProduct.rows[0]);
   } catch (error) {
     console.error(error.message);
     res.send(error.message);
