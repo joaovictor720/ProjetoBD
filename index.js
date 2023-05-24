@@ -61,16 +61,20 @@ app.post('/login', async (req, res) => {
       WHERE email = '${email}';`
     );
 
+    if (!user){
+      return res.status(401).json({ message: 'Credenciais inválidas' });
+    }
+
     // If the password is invalid, return an error response
     if (password !== user.rows[0].password) {
-      return res.status(401).json({ message: 'Invalid credentials' });
+      return res.status(401).json({ message: 'Credenciais inválidas' });
     }
 
     res.json(user.rows[0]);
 
   } catch (error) {
     console.error(error.message);
-    res.status(401).json({ message: '' });
+    res.status(401).json({ message: 'Credenciais inválidas' });
   }
 });
 
