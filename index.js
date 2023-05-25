@@ -100,7 +100,8 @@ app.post('/products', async (req, res) => {
     const { name, price, category, color, size, count } = req.body;
     const newProduct = await database.query(
       `INSERT INTO product (name, price, category, color, size, count) 
-      VALUES ('${name}', ${price}, '${category}', '${color}', '${size}', ${count});`
+      VALUES ('${name}', ${price}, '${category}', '${color}', '${size}', ${count})
+      RETURNING name, price, category, color, size, count;`
     );
     res.json(newProduct.rows);
   } catch (error) {
