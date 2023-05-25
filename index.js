@@ -15,7 +15,7 @@ app.get('/products', async (req, res) => {
     res.json(products.rows);
   } catch (err) {
     console.error(err.message);
-    res.send(error.message);
+    res.json(error.message);
   }
 });
 
@@ -26,12 +26,12 @@ app.get('/products/name/:name', async (req, res) => {
     const products = await database.query(
       `SELECT * 
       FROM product 
-      WHERE name = ${name};`
+      WHERE name = '${name}';`
     );
     res.json(products.rows);
   } catch (error) {
     console.error(error.message);
-    res.send(error.message);
+    res.json(error.message);
   }
 });
 
@@ -42,12 +42,12 @@ app.get('/products/category/:category', async (req, res) => {
     const products = await database.query(
       `SELECT * 
       FROM product 
-      WHERE category = ${category};`
+      WHERE category = '${category}';`
     );
     res.json(products.rows);
   } catch (error) {
     console.error(error.message);
-    res.send(error.message);
+    res.json(error.message);
   }
 });
 
@@ -136,7 +136,7 @@ app.post('/purchases', async (req, res) => {
     res.json(newPurchase.rows[0]);
   } catch (error) {
     console.error(error.message);
-    res.send(error.message);
+    res.json(error.message);
   }
 });
 
@@ -154,7 +154,7 @@ app.put('/products/:id', async (req, res) => {
     res.json(updatedProduct.rows[0]);
   } catch (error) {
     console.error(error.message);
-    res.send(error.message);
+    res.json(error.message);
   }
 });
 
@@ -169,7 +169,7 @@ app.delete('/products/:id', async (req, res) => {
     res.json(deletedProduct.rows[0]);
   } catch (error) {
     console.error(error.message);
-    res.send(error.message);
+    res.json(error.message);
   }
 });
 
@@ -184,7 +184,7 @@ app.delete('/products/:name', async (req, res) => {
     res.json(deletedProduct.rows[0]);
   } catch (error) {
     console.error(error.message);
-    res.send(error.message);
+    res.json(error.message);
   }
 });
 
