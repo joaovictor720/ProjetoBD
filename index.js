@@ -106,7 +106,7 @@ app.post('/products', async (req, res) => {
     const allProducts = await database.query('SELECT * FROM product;');
     res.json(allProducts.rows);
   } catch (error) {
-    console.error(error.message);
+    console.log(error.message);
     res.status(500).json({ message: 'Produto já existe' });
   }
 });
