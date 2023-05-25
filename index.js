@@ -114,7 +114,7 @@ app.post('/products', async (req, res) => {
 // Register a purchase
 app.post('/purchases', async (req, res) => {
   try {
-    const { userId, productId, count } = req.body;
+    const { userId, boughtProducts } = req.body;
     const newPurchase = await database.query(
       `INSERT INTO purchase (users_id) 
       VALUES (${userId})
@@ -124,12 +124,12 @@ app.post('/purchases', async (req, res) => {
     boughtProducts.forEach(async (boughtProduct) => {
       await database.query(
         `INSERT INTO purchase_products (purchase_id, product_id, count) 
-        VALUES (${newPurchase.rows[0].id}, ${id}, ${count});`
+        VALUES (${newPurchase.rows[0].id}, ${boughtProduct.id}, ${boughtProduct.count});`
       );
       await database.query(
         `UPDATE product
-        SET count = count - ${count}
-        WHERE id = ${id};`
+        SET count = count - ${boughtProduct.count}
+        WHERE id = ${boughtProduct.id};`
       );
     });
 
