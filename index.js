@@ -28,7 +28,7 @@ app.get('/products/name/:name', async (req, res) => {
       FROM product 
       WHERE name LIKE '%${name}%';`
     );
-    res.json(products.rows[0]);
+    res.json(products.rows);
   } catch (error) {
     console.error(error.message);
     res.json(error.message);
@@ -44,7 +44,7 @@ app.get('/products/category/:category', async (req, res) => {
       FROM product 
       WHERE category LIKE '%${category}%';`
     );
-    res.json(products.rows[0]);
+    res.json(products.rows);
   } catch (error) {
     console.error(error.message);
     res.json(error.message);
