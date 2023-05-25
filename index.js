@@ -97,12 +97,12 @@ app.post('/users', async (req, res) => {
 // Register a new product
 app.post('/products', async (req, res) => {
   try {
-    const { name, price, category, color, size } = req.body;
+    const { name, price, category, color, size, count } = req.body;
     const newProduct = await database.query(
-      `INSERT INTO product (name, price, category, color, size) 
-      VALUES ('${name}', ${price}, '${category}', '${color}', '${size}');`
+      `INSERT INTO product (name, price, category, color, size, count) 
+      VALUES ('${name}', ${price}, '${category}', '${color}', '${size}', ${count});`
     );
-    res.json(newProduct.rows[0]);
+    res.json(newProduct.rows);
   } catch (error) {
     console.error(error.message);
     res.send(error.message);
