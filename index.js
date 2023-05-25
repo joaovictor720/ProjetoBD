@@ -148,7 +148,7 @@ app.put('/products/:id', async (req, res) => {
 
     const updatedProduct = await database.query(
       `UPDATE product 
-      SET name = ${name}, price = ${price}, category = ${category}, color = ${color}, size = ${size}, count = ${count}
+      SET name = '${name}', price = ${price}, category = '${category}', color = '${color}', size = '${size}', count = ${count}
       WHERE id = ${id};`
     );
     const updatedProducts = await database.query('SELECT * FROM product;');
@@ -181,7 +181,7 @@ app.delete('/products/:name', async (req, res) => {
     const { name } = req.params;
     const deletedProduct = await database.query(
       `DELETE FROM product 
-      WHERE name LIKE %'${name}'%;`
+      WHERE name LIKE '%${name}%';`
     );
     const deletedProducts = await database.query('SELECT * FROM product;');
     res.json(deletedProducts.rows);
