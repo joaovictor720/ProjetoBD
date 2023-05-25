@@ -114,10 +114,10 @@ app.post('/products', async (req, res) => {
 // Register a purchase
 app.post('/purchases', async (req, res) => {
   try {
-    const { clientId, boughtProducts } = req.body;
+    const { userId, boughtProducts } = req.body;
     const newPurchase = await database.query(
-      `INSERT INTO purchase (client_id) 
-      VALUES (${clientId})
+      `INSERT INTO purchase (users_id) 
+      VALUES (${userId})
       RETURNING id;`
     );
 
