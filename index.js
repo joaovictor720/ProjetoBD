@@ -144,14 +144,15 @@ app.post('/purchases', async (req, res) => {
 app.put('/products/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    const { product } = req.body;
+    const { name, price, category, color, size, count } = req.body;
 
     const updatedProduct = await database.query(
       `UPDATE product 
-      SET name = ${procuct.name}, price = ${product.price}, category = ${product.category}, color = ${product.color}, size = ${product.size}, count = ${product.count}
+      SET name = ${name}, price = ${price}, category = ${category}, color = ${color}, size = ${size}, count = ${count}
       WHERE id = ${id};`
     );
-    res.json(updatedProduct.rows[0]);
+    const updatedProducts = await database.query('SELECT * FROM product;');
+    res.json(updatedProducts.rows);
   } catch (error) {
     console.error(error.message);
     res.json(error.message);
@@ -166,7 +167,8 @@ app.delete('/products/:id', async (req, res) => {
       `DELETE FROM product 
       WHERE id = ${id};`
     );
-    res.json(deletedProduct.rows[0]);
+    const deletedProducts = await database.query('SELECT * FROM product;');
+    res.json(deletedProducts.rows);
   } catch (error) {
     console.error(error.message);
     res.json(error.message);
@@ -179,9 +181,10 @@ app.delete('/products/:name', async (req, res) => {
     const { name } = req.params;
     const deletedProduct = await database.query(
       `DELETE FROM product 
-      WHERE name LIKE(%${name}%);`
+      WHERE name LIKE %'${name}'%;`
     );
-    res.json(deletedProduct.rows[0]);
+    const deletedProducts = await database.query('SELECT * FROM product;');
+    res.json(deletedProducts.rows);
   } catch (error) {
     console.error(error.message);
     res.json(error.message);
