@@ -107,7 +107,7 @@ app.post('/products', async (req, res) => {
     res.json(allProducts.rows);
   } catch (error) {
     console.error(error.message);
-    res.send(error.message);
+    res.status(500).json({ message: 'Produto já existe' });
   }
 });
 

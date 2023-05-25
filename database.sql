@@ -48,3 +48,5 @@ CREATE TABLE purchase_products(
     CONSTRAINT purchase_fk FOREIGN KEY (purchase_id) REFERENCES purchase (id),
     CONSTRAINT product_fk FOREIGN KEY (product_id) REFERENCES product (id)
 );
+
+ALTER TABLE product ADD CONSTRAINT unique_product_name UNIQUE (name);
