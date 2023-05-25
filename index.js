@@ -26,7 +26,7 @@ app.get('/products/name/:name', async (req, res) => {
     const products = await database.query(
       `SELECT * 
       FROM product 
-      WHERE name LIKE(%${name}%);`
+      WHERE name = ${name};`
     );
     res.json(products.rows);
   } catch (error) {
@@ -42,7 +42,7 @@ app.get('/products/category/:category', async (req, res) => {
     const products = await database.query(
       `SELECT * 
       FROM product 
-      WHERE category LIKE(%${category}%);`
+      WHERE category = ${category};`
     );
     res.json(products.rows);
   } catch (error) {
