@@ -50,3 +50,4 @@ CREATE TABLE purchase_products(
 );
 
 ALTER TABLE product ADD CONSTRAINT unique_product_name UNIQUE (name);
+ALTER TABLE product ALTER COLUMN size TYPE VARCHAR(2);
