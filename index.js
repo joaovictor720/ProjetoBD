@@ -103,7 +103,8 @@ app.post('/products', async (req, res) => {
       VALUES ('${name}', ${price}, '${category}', '${color}', '${size}', ${count})
       RETURNING name, price, category, color, size, count;`
     );
-    res.json(newProduct.rows);
+    const allProducts = await database.query('SELECT * FROM product;');
+    res.json(allProducts.rows);
   } catch (error) {
     console.error(error.message);
     res.send(error.message);
