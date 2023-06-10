@@ -1,5 +1,6 @@
 const express = require('express');
-const database = require('./dbConnection');
+const CRUD = require('./queries/CRUD');
+const facade = new CRUD();
 const app = express();
 
 app.use(express.json());
@@ -11,7 +12,7 @@ app.use(express.json());
 // Get all products
 app.get('/products', async (req, res) => {
   try {
-    const products = await database.query('SELECT * FROM product;');
+    const products = facade.getAllProducts();
     res.json(products.rows);
   } catch (err) {
     console.error(err.message);
@@ -23,11 +24,7 @@ app.get('/products', async (req, res) => {
 app.get('/products/name/:name', async (req, res) => {
   try {
     const { name } = req.params;
-    const products = await database.query(
-      `SELECT * 
-      FROM product 
-      WHERE name LIKE '%${name}%';`
-    );
+    const products = facade.getProductsByName(name);
     res.json(products.rows);
   } catch (error) {
     console.error(error.message);
@@ -39,11 +36,7 @@ app.get('/products/name/:name', async (req, res) => {
 app.get('/products/category/:category', async (req, res) => {
   try {
     const { category } = req.params;
-    const products = await database.query(
-      `SELECT * 
-      FROM product 
-      WHERE category LIKE '%${category}%';`
-    );
+    const products = facade.getProductsByCategory(category);
     res.json(products.rows);
   } catch (error) {
     console.error(error.message);
@@ -55,11 +48,7 @@ app.get('/products/category/:category', async (req, res) => {
 app.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body;
-    const user = await database.query(
-      `SELECT * 
-      FROM users 
-      WHERE email = '${email}';`
-    );
+    const user = facade.getUserByEmail(email);
 
     if (!user){
       return res.status(401).json({ message: 'Credenciais inválidas' });
@@ -81,12 +70,8 @@ app.post('/login', async (req, res) => {
 // Register a new user
 app.post('/users', async (req, res) => {
   try {
-    const { name, type, email, password } = req.body;
-    const newUser = await database.query(
-      `INSERT INTO users (name, type, email, password) 
-      VALUES ('${name}', '${type}', '${email}', '${password}')
-      RETURNING id, name, type, email;`
-    );
+    const { name, type, email, password, anime, team, hometown } = req.body;
+    const newUser = facade.registerUser(name, type, email, password, anime, team, hometown);
     res.json(newUser.rows[0]);
   } catch (error) {
     console.error(error.message);
