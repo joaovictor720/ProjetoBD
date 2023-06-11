@@ -12,7 +12,7 @@ app.use(express.json());
 // Get all products
 app.get('/products', async (req, res) => {
   try {
-    const products = facade.getAllProducts();
+    const products = await facade.getAllProducts();
     res.json(products.rows);
   } catch (err) {
     console.error(err.message);
@@ -24,7 +24,7 @@ app.get('/products', async (req, res) => {
 app.get('/products/name/:name', async (req, res) => {
   try {
     const { name } = req.params;
-    const products = facade.getProductsByName(name);
+    const products = await facade.getProductsByName(name);
     res.json(products.rows);
   } catch (error) {
     console.error(error.message);
@@ -36,7 +36,7 @@ app.get('/products/name/:name', async (req, res) => {
 app.get('/products/category/:category', async (req, res) => {
   try {
     const { category } = req.params;
-    const products = facade.getProductsByCategory(category);
+    const products = await facade.getProductsByCategory(category);
     res.json(products.rows);
   } catch (error) {
     console.error(error.message);
@@ -47,7 +47,7 @@ app.get('/products/category/:category', async (req, res) => {
 // Get this month reports
 app.get('/users/reports', async (req, res) => {
   try {
-    const reports = facade.getCurrentMonthReports();
+    const reports = await facade.getCurrentMonthReports();
   } catch (error) {
     console.error(error.message);
     res.json(error.message);
@@ -58,7 +58,7 @@ app.get('/users/reports', async (req, res) => {
 app.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body;
-    const user = facade.getUserByEmail(email);
+    const user = await facade.getUserByEmail(email);
 
     if (!user){
       return res.status(401).json({ message: 'Credenciais inválidas' });
@@ -81,7 +81,7 @@ app.post('/login', async (req, res) => {
 app.post('/users', async (req, res) => {
   try {
     const { name, type, email, password, anime, team, hometown } = req.body;
-    const newUser = facade.registerUser(name, type, email, password, anime, team, hometown);
+    const newUser = await facade.registerUser(name, type, email, password, anime, team, hometown);
     res.json(newUser);
   } catch (error) {
     console.error(error.message);
@@ -93,8 +93,8 @@ app.post('/users', async (req, res) => {
 app.post('/products', async (req, res) => {
   try {
     const { name, price, category, color, size, count, city } = req.body;
-    facade.registerProduct(name, price, category, color, size, count, city);
-    const allProducts = facade.getAllProducts();
+    await facade.registerProduct(name, price, category, color, size, count, city);
+    const allProducts = await facade.getAllProducts();
     res.json(allProducts.rows);
   } catch (error) {
     console.log(error.message);
@@ -106,7 +106,7 @@ app.post('/products', async (req, res) => {
 app.post('/purchases', async (req, res) => {
   try {
     const { userId, boughtProducts } = req.body;
-    const newPurchase = facade.registerPurchase(userId, boughtProducts);
+    const newPurchase = await facade.registerPurchase(userId, boughtProducts);
 
     res.json(newPurchase.rows[0]);
   } catch (error) {
@@ -121,8 +121,8 @@ app.put('/products/:id', async (req, res) => {
     const { id } = req.params;
     const { name, price, category, color, size, count, city } = req.body;
 
-    facade.updateProduct(id, name, price, category, color, size, count, city);
-    const updatedProducts = facade.getAllProducts();
+    await facade.updateProduct(id, name, price, category, color, size, count, city);
+    const updatedProducts = await facade.getAllProducts();
     res.json(updatedProducts.rows);
   } catch (error) {
     console.error(error.message);
@@ -134,8 +134,8 @@ app.put('/products/:id', async (req, res) => {
 app.delete('/products/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    facade.deleteProductById(id);
-    const deletedProducts = facade.getAllProducts();
+    await facade.deleteProductById(id);
+    const deletedProducts = await facade.getAllProducts();
     res.json(deletedProducts.rows);
   } catch (error) {
     console.error(error.message);
@@ -147,8 +147,8 @@ app.delete('/products/:id', async (req, res) => {
 app.delete('/products/:name', async (req, res) => {
   try {
     const { name } = req.params;
-    facade.deleteProductByName(name);
-    const deletedProducts = facade.getAllProducts();
+    await facade.deleteProductByName(name);
+    const deletedProducts = await facade.getAllProducts();
     res.json(deletedProducts.rows);
   } catch (error) {
     console.error(error.message);
