@@ -7,7 +7,7 @@ class CRUD {
 
     async registerUser(name, type, email, password, anime, team, hometown) {
         return await database.query(
-            `INSERT INTO users (name, type, email, password, favorite_anime, favorite_team, hometown) 
+            `INSERT INTO users (name, type, email, password, anime, team, hometown) 
             VALUES ('${name}', '${type}', '${email}', '${password}', '${anime}', '${team}', '${hometown}')
             RETURNING id, name, type, email, anime, team, hometown;`
         );
