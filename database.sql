@@ -60,3 +60,5 @@ INNER JOIN payment AS Payment
 ON Employee.id = Payment.employee_id
 WHERE Payment.status = 'confirmed'
 GROUP BY Employee.id;
+
+CREATE VIEW monthly_report() AS
