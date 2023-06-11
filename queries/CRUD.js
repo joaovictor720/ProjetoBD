@@ -13,8 +13,9 @@ class CRUD {
                 VALUES ('${name}', '${type}', '${email}', '${password}', '${anime}', '${team}', '${hometown}')
                 RETURNING id, name, type, email, anime, team, hometown;`
             );
+            console.log(registeredUser);
         } catch (error) {
-           console.error(error.message);
+            console.error(error.message);
             registeredUser = { message: 'Error while registering' }
         }
         return registeredUser;
