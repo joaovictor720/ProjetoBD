@@ -44,6 +44,16 @@ app.get('/products/category/:category', async (req, res) => {
   }
 });
 
+// Get this month reports
+app.get('/users/reports', async (req, res) => {
+  try {
+    const reports = facade.getCurrentMonthReports();
+  } catch (error) {
+    console.error(error.message);
+    res.json(error.message);
+  }
+});
+
 // Validate user credentials
 app.post('/login', async (req, res) => {
   try {
@@ -82,13 +92,9 @@ app.post('/users', async (req, res) => {
 // Register a new product
 app.post('/products', async (req, res) => {
   try {
-    const { name, price, category, color, size, count } = req.body;
-    const newProduct = await database.query(
-      `INSERT INTO product (name, price, category, color, size, count) 
-      VALUES ('${name}', ${price}, '${category}', '${color}', '${size}', ${count})
-      RETURNING name, price, category, color, size, count;`
-    );
-    const allProducts = await database.query('SELECT * FROM product;');
+    const { name, price, category, color, size, count, city } = req.body;
+    facade.registerProduct(name, price, category, color, size, count, city);
+    const allProducts = facade.getAllProducts();
     res.json(allProducts.rows);
   } catch (error) {
     console.log(error.message);
@@ -100,6 +106,7 @@ app.post('/products', async (req, res) => {
 app.post('/purchases', async (req, res) => {
   try {
     const { userId, boughtProducts } = req.body;
+    /*
     const newPurchase = await database.query(
       `INSERT INTO purchase (user_id) 
       VALUES (${userId})
@@ -117,6 +124,8 @@ app.post('/purchases', async (req, res) => {
         WHERE id = ${boughtProduct.id};`
       );
     });
+    */
+    const newPurchase = facade.registerPurchase(userId, boughtProducts);
 
     res.json(newPurchase.rows[0]);
   } catch (error) {
@@ -129,14 +138,10 @@ app.post('/purchases', async (req, res) => {
 app.put('/products/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, price, category, color, size, count } = req.body;
+    const { name, price, category, color, size, count, city } = req.body;
 
-    const updatedProduct = await database.query(
-      `UPDATE product 
-      SET name = '${name}', price = ${price}, category = '${category}', color = '${color}', size = '${size}', count = ${count}
-      WHERE id = ${id};`
-    );
-    const updatedProducts = await database.query('SELECT * FROM product;');
+    facade.updateProduct(id, name, price, category, color, size, count, city);
+    const updatedProducts = facade.getAllProducts();
     res.json(updatedProducts.rows);
   } catch (error) {
     console.error(error.message);
@@ -144,15 +149,12 @@ app.put('/products/:id', async (req, res) => {
   }
 });
 
-// Delete a product
+// Delete a product by id
 app.delete('/products/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    const deletedProduct = await database.query(
-      `DELETE FROM product 
-      WHERE id = ${id};`
-    );
-    const deletedProducts = await database.query('SELECT * FROM product;');
+    facade.deleteProductById(id);
+    const deletedProducts = facade.getAllProducts();
     res.json(deletedProducts.rows);
   } catch (error) {
     console.error(error.message);
@@ -164,11 +166,8 @@ app.delete('/products/:id', async (req, res) => {
 app.delete('/products/:name', async (req, res) => {
   try {
     const { name } = req.params;
-    const deletedProduct = await database.query(
-      `DELETE FROM product 
-      WHERE name LIKE '%${name}%';`
-    );
-    const deletedProducts = await database.query('SELECT * FROM product;');
+    facade.deleteProductByName(name);
+    const deletedProducts = facade.getAllProducts();
     res.json(deletedProducts.rows);
   } catch (error) {
     console.error(error.message);
