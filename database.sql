@@ -53,12 +53,10 @@ ALTER TABLE product ADD CONSTRAINT unique_product_name UNIQUE (name);
 ALTER TABLE product ALTER COLUMN size TYPE VARCHAR(2);
 ALTER TABLE product DROP CONSTRAINT unique_product_name;
 
-CREATE VIEW monthly_report(employee_id) AS 
-SELECT Employee.id, Employee.name, COUNT(*) AS confirmed_payments -- There might be other fields here
-FROM users AS Employee
-INNER JOIN payment AS Payment
-ON Employee.id = Payment.employee_id
-WHERE Payment.status = 'confirmed'
-GROUP BY Employee.id;
-
-CREATE VIEW monthly_report() AS
+CREATE VIEW monthly_report(product_id, product_name, sold_count) AS
+SELECT Product.id, Product.name, COUNT(*) AS sold_count
+FROM purchase_products AS p_list
+INNER JOIN product AS Product
+ON p_list.product_id = Product.id
+WHERE p_list.purchase_id NOT NULL
+GROUP BY p_list.product_id;

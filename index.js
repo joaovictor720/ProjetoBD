@@ -85,7 +85,7 @@ app.post('/users', async (req, res) => {
     res.json(newUser);
   } catch (error) {
     console.error(error.message);
-    res.status(401).json({ message: 'User already exists' });
+    res.status(401).json({ message: 'Usuário já existe' });
   }
 });
 

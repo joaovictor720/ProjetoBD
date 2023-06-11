@@ -16,9 +16,9 @@ class CRUD {
             console.log(registeredUser);
         } catch (error) {
             console.error(error.message);
-            registeredUser = { message: 'Error while registering' }
+            registeredUser = { message: 'Usuário já existe' }
         }
-        return registeredUser;
+        return registeredUser.rows[0];
     }
 
     async registerProduct(name, price, category, color, size, count, city) {
