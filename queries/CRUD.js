@@ -6,11 +6,18 @@ class CRUD {
      */
 
     async registerUser(name, type, email, password, anime, team, hometown) {
-        return await database.query(
-            `INSERT INTO users (name, type, email, password, anime, team, hometown) 
-            VALUES ('${name}', '${type}', '${email}', '${password}', '${anime}', '${team}', '${hometown}')
-            RETURNING id, name, type, email, anime, team, hometown;`
-        );
+        var registeredUser;
+        try {
+            registeredUser = await database.query(
+                `INSERT INTO users (name, type, email, password, anime, team, hometown) 
+                VALUES ('${name}', '${type}', '${email}', '${password}', '${anime}', '${team}', '${hometown}')
+                RETURNING id, name, type, email, anime, team, hometown;`
+            );
+        } catch (error) {
+           console.error(error.message);
+            registeredUser = { message: 'Error while registering' }
+        }
+        return registeredUser;
     }
 
     async registerProduct(name, price, category, color, size, count, city) {

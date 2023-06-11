@@ -82,7 +82,7 @@ app.post('/users', async (req, res) => {
   try {
     const { name, type, email, password, anime, team, hometown } = req.body;
     const newUser = facade.registerUser(name, type, email, password, anime, team, hometown);
-    res.json(newUser.rows[0]);
+    res.json(newUser);
   } catch (error) {
     console.error(error.message);
     res.status(401).json({ message: 'User already exists' });
@@ -106,25 +106,6 @@ app.post('/products', async (req, res) => {
 app.post('/purchases', async (req, res) => {
   try {
     const { userId, boughtProducts } = req.body;
-    /*
-    const newPurchase = await database.query(
-      `INSERT INTO purchase (user_id) 
-      VALUES (${userId})
-      RETURNING id;`
-    );
-
-    boughtProducts.forEach(async (boughtProduct) => {
-      await database.query(
-        `INSERT INTO purchase_products (purchase_id, product_id, count) 
-        VALUES (${newPurchase.rows[0].id}, ${boughtProduct.id}, ${boughtProduct.count});`
-      );
-      await database.query(
-        `UPDATE product
-        SET count = count - ${boughtProduct.count}
-        WHERE id = ${boughtProduct.id};`
-      );
-    });
-    */
     const newPurchase = facade.registerPurchase(userId, boughtProducts);
 
     res.json(newPurchase.rows[0]);
