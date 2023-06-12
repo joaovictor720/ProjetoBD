@@ -60,3 +60,30 @@ INNER JOIN product AS Product
 ON p_list.product_id = Product.id
 WHERE p_list.purchase_id NOT NULL
 GROUP BY p_list.product_id;
+
+CREATE OR REPLACE FUNCTION get_monthly_report(month INTEGER, year INTEGER)
+    RETURNS TABLE (
+        product_name VARCHAR,
+        quantity_sold INTEGER,
+        partial_amount NUMERIC,
+        total_amount NUMERIC
+    )
+    AS $$
+    BEGIN
+    RETURN QUERY
+    SELECT
+        p.product_name,
+        SUM(s.quantity) AS quantity_sold,
+        SUM(s.quantity * s.unit_price) AS partial_amount,
+        SUM(s.quantity * s.unit_price) OVER () AS total_amount
+    FROM
+        sales s
+    INNER JOIN
+        products p ON s.product_id = p.product_id
+    WHERE
+        EXTRACT(MONTH FROM s.sale_date) = month
+        AND EXTRACT(YEAR FROM s.sale_date) = year
+    GROUP BY
+        p.product_name;
+    END;
+$$ LANGUAGE plpgsql;
