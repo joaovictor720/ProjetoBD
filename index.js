@@ -126,7 +126,7 @@ app.post('/products', async (req, res) => {
 app.post('/purchases', async (req, res) => {
   try {
     const { userId, boughtProducts } = req.body;
-    const newPurchase = await facade.registerPurchase(userId, boughtProducts);
+    const newPurchase = await facade.registerPurchase(userId, new Date().getMonth()+1, boughtProducts);
 
     res.json(newPurchase.rows[0]);
   } catch (error) {

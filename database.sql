@@ -63,6 +63,7 @@ GROUP BY p_list.product_id;
 
 CREATE OR REPLACE FUNCTION make_purchase(
     client_id INTEGER,
+    purchase_month INTEGER,
     bought_products purchase_product[]
 )
 RETURNS VOID
@@ -85,8 +86,8 @@ LOOP
 END LOOP;
 
 -- Register a new purchase
-INSERT INTO purchase (user_id)
-VALUES (client_id)
+INSERT INTO purchase (user_id, month)
+VALUES (client_id, purchase_month)
 RETURNING purchase_id INTO purchase_id;
 
 -- Register the products bought in the purchase

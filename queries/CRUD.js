@@ -29,7 +29,7 @@ class CRUD {
         );
     }
 
-    async registerPurchase(userId, boughtProducts) {
+    async registerPurchase(userId, month, boughtProducts) {
         /*
         var newPurchase = await database.query(
             `INSERT INTO purchase (user_id) 
@@ -59,7 +59,7 @@ class CRUD {
         // DEBUG
         console.log('Concatenated products: ' + productListQuery);
         await database.query(
-            `CALL make_purchase(${userId}, ARRAY[ ${productListQuery} ]::purchase_product[])`
+            `CALL make_purchase(${userId}, ${month}, ARRAY[ ${productListQuery} ]::purchase_product[])`
         );
         return newPurchase;
     }
