@@ -60,3 +60,40 @@ INNER JOIN product AS Product
 ON p_list.product_id = Product.id
 WHERE p_list.purchase_id NOT NULL
 GROUP BY p_list.product_id;
+
+CREATE OR REPLACE FUNCTION make_purchase(
+    client_id INTEGER,
+    bought_products purchase_product[]
+)
+RETURNS VOID
+AS $$
+DECLARE
+    available_amount INTEGER;
+    purchase_id INTEGER;
+BEGIN
+
+-- Verify if purchasing the products is possible
+FOREACH bought_product IN ARRAY bought_products
+LOOP
+    SELECT count INTO available_amount
+    FROM product
+    WHERE id = bought_product.product_id;
+
+    IF available_amount < bought_product.count THEN
+        RAISE EXCEPTION 'Insufficient amount available for product_id: %', bought_product.product_id;
+    END IF;
+END LOOP;
+
+-- Register a new purchase
+INSERT INTO purchase (user_id)
+VALUES (client_id)
+RETURNING purchase_id INTO purchase_id;
+
+-- Register the products bought in the purchase
+FOREACH bought_product IN ARRAY bought_products
+LOOP
+    INSERT INTO purchase_products (purchase_id, product_id, count)
+    VALUES (purchase_id, bought_product.product_id, bought_product.count);
+END LOOP;
+END;
+$$ LANGUAGE plpgsql;

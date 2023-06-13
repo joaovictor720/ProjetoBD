@@ -54,6 +54,26 @@ app.get('/users/reports', async (req, res) => {
   }
 });
 
+app.get('users/purchases/', async (req, res) => {
+  try {
+    const { id } = req.body;
+    const userPurchases = facade.getClientPurchases(id);
+    res.json(userPurchases);
+  } catch (error) {
+    
+  }
+});
+
+app.get('purchase/products', async (req, res) => {
+  try {
+    const { purchase_id } = req.body;
+    const products = facade.getPurchaseProducts(purchase_id);
+    res.json(products);
+  } catch (error) {
+    
+  }
+});
+
 // Validate user credentials
 app.post('/login', async (req, res) => {
   try {

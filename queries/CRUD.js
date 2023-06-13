@@ -30,7 +30,8 @@ class CRUD {
     }
 
     async registerPurchase(userId, boughtProducts) {
-        let newPurchase = await database.query(
+        /*
+        var newPurchase = await database.query(
             `INSERT INTO purchase (user_id) 
             VALUES (${userId})
             RETURNING id;`
@@ -47,6 +48,19 @@ class CRUD {
                 WHERE id = ${boughtProduct.id};`
             );
         });
+        */
+        let productListQuery = '';
+        for (let i in boughtProducts){
+            productListQuery += `ROW(${boughtProducts[i].product_id}, ${boughtProducts[i].count})`
+            if (i < boughtProducts.length){
+                productListQuery += ', ';
+            }
+        }
+        // DEBUG
+        console.log('Concatenated products: ' + productListQuery);
+        await database.query(
+            `CALL make_purchase(${userId}, ARRAY[ ${productListQuery} ]::purchase_product[])`
+        );
         return newPurchase;
     }
 
@@ -124,11 +138,24 @@ class CRUD {
     }
 
     async getClientPurchases(clientId) {
-        return await database.query(
+        const purchases = await database.query(
             `SELECT *
-            FROM users
-            WHERE id = ${clientId};`
+            FROM purchase
+            WHERE user_id = ${clientId};`
         );
+        return purchases.rows;
+    }
+    
+    async getPurchaseProducts(purchaseId){
+        const products = await database.query(
+            `SELECT Prod.name, Prod.*
+            FROM purchase AS Purch
+            INNER JOIN purchase_products AS p_list
+            ON Purch.id = p_list.purchase_id
+            INNER JOIN product AS Prod
+            ON p_list.product_id = Prod.id;`
+        );
+        return products.rows;
     }
 
     /**
