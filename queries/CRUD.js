@@ -101,6 +101,14 @@ class CRUD {
         );
     }
 
+    async getReportsByMonth(month){
+        return await database.query(
+            `SELECT *
+            FROM monthly_report
+            WHERE month = ${month};`
+        );
+    }
+
     async getUserByEmail(email) {
         return await database.query(
             `SELECT * 

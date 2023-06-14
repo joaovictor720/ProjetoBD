@@ -54,7 +54,7 @@ ALTER TABLE product ALTER COLUMN size TYPE VARCHAR(2);
 ALTER TABLE product DROP CONSTRAINT unique_product_name;
 
 CREATE VIEW monthly_report AS
-SELECT Product.id AS product_id, Product.name AS product_name, Purch.month, COUNT(*) AS sold_count
+SELECT Product.id AS product_id, Product.name AS product_name, Product.size, Purch.month, COUNT(*) AS sold_count
 FROM purchase_products AS p_list
 INNER JOIN product AS Product ON p_list.product_id = Product.id
 INNER JOIN purchase AS Purch ON Purch.id = p_list.purchase_id

@@ -45,9 +45,10 @@ app.get('/products/category/:category', async (req, res) => {
 });
 
 // Get this month reports
-app.get('/users/reports', async (req, res) => {
+app.get('/users/reports/:month_number', async (req, res) => {
   try {
-    const reports = await facade.getCurrentMonthReports();
+    const { month_number } = req.params;
+    const reports = await facade.getReportsByMonth(month_number);
     res.json(reports.rows);
   } catch (error) {
     console.error(error.message);
