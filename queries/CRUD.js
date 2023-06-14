@@ -32,7 +32,7 @@ class CRUD {
     async registerPurchase(userId, month, boughtProducts) {
         let productListQuery = '';
         for (let i in boughtProducts){
-            productListQuery += `ROW(${boughtProducts[i].id}, ${boughtProducts[i].count})`;
+            productListQuery += `(${boughtProducts[i].id}, ${boughtProducts[i].count})`;
             if (i < boughtProducts.length){
                 productListQuery += ', ';
             }
