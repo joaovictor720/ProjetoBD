@@ -128,7 +128,7 @@ class CRUD {
     
     async getPurchaseProducts(purchaseId){
         const products = await database.query(
-            `SELECT Prod.*
+            `SELECT Prod.id, Prod.name, Prod.price, Prod.category, Prod.color, Prod.size, Prod.city, COUNT(p_list.product_id) AS bought_amount
             FROM purchase AS Purch
             INNER JOIN purchase_products AS p_list
             ON Purch.id = p_list.purchase_id
