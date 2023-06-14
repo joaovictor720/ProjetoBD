@@ -69,6 +69,7 @@ CREATE TYPE product_list AS (
 CREATE OR REPLACE PROCEDURE make_purchase(
     client_id INTEGER,
     purchase_month INTEGER,
+    purchase_total FLOAT,
     bought_products product_list[]
 )
     AS $$
@@ -76,7 +77,7 @@ CREATE OR REPLACE PROCEDURE make_purchase(
         available_amount INTEGER;
         purchase_id INTEGER;
         product_price FLOAT;
-        purchase_total FLOAT;
+        --purchase_total FLOAT;
     BEGIN
 
     -- Verify if purchasing the products is possible
@@ -96,7 +97,7 @@ CREATE OR REPLACE PROCEDURE make_purchase(
         FROM product
         WHERE id = bought_products[i].product_id;
         
-        purchase_total := purchase_total + product_price;
+        --purchase_total := purchase_total + product_price;
     END LOOP;
 
     -- Register a new purchase
@@ -111,6 +112,10 @@ CREATE OR REPLACE PROCEDURE make_purchase(
     LOOP
         INSERT INTO purchase_products (purchase_id, product_id, count)
         VALUES (purchase_id, bought_products[i].product_id, bought_products[i].count);
+
+        UPDATE product
+        SET count = count - bought_products[i].count
+        WHERE id = bought_products[i].product_id;
     END LOOP;
     END;
 $$ LANGUAGE plpgsql;

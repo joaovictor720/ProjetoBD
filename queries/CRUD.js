@@ -29,7 +29,7 @@ class CRUD {
         );
     }
 
-    async registerPurchase(userId, month, boughtProducts) {
+    async registerPurchase(userId, month, total, boughtProducts) {
         let productListQuery = '';
         for (let i in boughtProducts){
             productListQuery += `(${boughtProducts[i].id}, ${boughtProducts[i].count})`;
@@ -40,7 +40,7 @@ class CRUD {
         // DEBUG
         console.log('Concatenated products: ' + productListQuery);
         await database.query(
-            `CALL make_purchase(${userId}, ${month}, ARRAY[ ${productListQuery} ]::product_list[]);`
+            `CALL make_purchase(${userId}, ${month}, ${total}, ARRAY[ ${productListQuery} ]::product_list[]);`
         );
     }
 
@@ -128,7 +128,7 @@ class CRUD {
     
     async getPurchaseProducts(purchaseId){
         const products = await database.query(
-            `SELECT Prod.id, Prod.name, Prod.price, Prod.category, Prod.color, Prod.size, Prod.city, COUNT(p_list.product_id) AS bought_amount
+            `SELECT Prod.id, Prod.name, Prod.price, Prod.category, Prod.color, Prod.size, Prod.city
             FROM purchase AS Purch
             INNER JOIN purchase_products AS p_list
             ON Purch.id = p_list.purchase_id
