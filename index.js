@@ -127,6 +127,8 @@ app.post('/purchases', async (req, res) => {
   try {
     const { userId, boughtProducts } = req.body;
     const now = new Date();
+    console.log('userId: ' + userId);
+    console.log('boughtProducts: ' + boughtProducts);
     await facade.registerPurchase(userId, now.getMonth()+1, boughtProducts);
 
     res.json({ message: 'Compra realizada com sucesso' });
