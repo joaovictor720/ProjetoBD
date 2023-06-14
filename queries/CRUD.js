@@ -33,7 +33,7 @@ class CRUD {
         let productListQuery = '';
         for (let i in boughtProducts){
             productListQuery += `(${boughtProducts[i].id}, ${boughtProducts[i].count})`;
-            if (i < boughtProducts.length){
+            if (i < boughtProducts.length-1){
                 productListQuery += ', ';
             }
         }
