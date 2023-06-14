@@ -128,12 +128,13 @@ class CRUD {
     
     async getPurchaseProducts(purchaseId){
         const products = await database.query(
-            `SELECT Prod.name, Prod.*
+            `SELECT Prod.*
             FROM purchase AS Purch
             INNER JOIN purchase_products AS p_list
             ON Purch.id = p_list.purchase_id
             INNER JOIN product AS Prod
-            ON p_list.product_id = Prod.id;`
+            ON p_list.product_id = Prod.id
+            WHERE Purch.id = ${purchaseId};`
         );
         return products.rows;
     }
