@@ -61,54 +61,56 @@ ON p_list.product_id = Product.id
 WHERE p_list.purchase_id NOT NULL
 GROUP BY p_list.product_id;
 
-CREATE OR REPLACE FUNCTION get_monthly_report()
+CREATE TYPE product_list AS (
+    product_id INTEGER,
+    count INTEGER
+);
 
-CREATE OR REPLACE FUNCTION make_purchase(
+CREATE OR REPLACE PROCEDURE make_purchase(
     client_id INTEGER,
     purchase_month INTEGER,
-    bought_products purchase_products[]
+    bought_products product_list[]
 )
-RETURNS VOID
-AS $$
-DECLARE
-    available_amount INTEGER;
-    purchase_id INTEGER;
-    product_price FLOAT;
-    purchase_total FLOAT;
-BEGIN
+    AS $$
+    DECLARE
+        available_amount INTEGER;
+        purchase_id INTEGER;
+        product_price FLOAT;
+        purchase_total FLOAT;
+    BEGIN
 
--- Verify if purchasing the products is possible
---FOREACH bought_product IN ARRAY bought_products
---LOOP
-FOR i IN array_lower(p_products, 1) .. array_upper(p_products, 1)
-LOOP
-    SELECT count INTO available_amount
-    FROM product
-    WHERE id = bought_products[i].product_id;
+    -- Verify if purchasing the products is possible
+    --FOREACH bought_product IN ARRAY bought_products
+    --LOOP
+    FOR i IN array_lower(bought_products, 1) .. array_upper(bought_products, 1)
+    LOOP
+        SELECT count INTO available_amount
+        FROM product
+        WHERE id = bought_products[i].product_id;
 
-    IF available_amount < bought_products[i].count THEN
-        RAISE EXCEPTION 'Insufficient amount available for product_id: %', bought_products[i].product_id;
-    END IF;
+        IF available_amount < bought_products[i].count THEN
+            RAISE EXCEPTION 'Insufficient amount available for product_id: %', bought_products[i].product_id;
+        END IF;
 
-    SELECT price INTO product_price
-    FROM product
-    WHERE id = bought_products[i].product_id;
-    
-    purchase_total = purchase_total + product_price;
-END LOOP;
+        SELECT price INTO product_price
+        FROM product
+        WHERE id = bought_products[i].product_id;
+        
+        purchase_total := purchase_total + product_price;
+    END LOOP;
 
--- Register a new purchase
-INSERT INTO purchase (user_id, month, total)
-VALUES (client_id, purchase_month, total)
-RETURNING purchase_id INTO purchase_id;
+    -- Register a new purchase
+    INSERT INTO purchase (user_id, month, total)
+    VALUES (client_id, purchase_month, purchase_total)
+    RETURNING id INTO purchase_id;
 
--- Register the products bought in the purchase
---FOREACH bought_product IN ARRAY bought_products
---LOOP
-FOR i IN array_lower(p_products, 1) .. array_upper(p_products, 1)
-LOOP
-    INSERT INTO purchase_products (purchase_id, product_id, count)
-    VALUES (purchase_id, bought_products[i].product_id, bought_products[i].count);
-END LOOP;
-END;
+    -- Register the products bought in the purchase
+    --FOREACH bought_product IN ARRAY bought_products
+    --LOOP
+    FOR i IN array_lower(bought_products, 1) .. array_upper(bought_products, 1)
+    LOOP
+        INSERT INTO purchase_products (purchase_id, product_id, count)
+        VALUES (purchase_id, bought_products[i].product_id, bought_products[i].count);
+    END LOOP;
+    END;
 $$ LANGUAGE plpgsql;

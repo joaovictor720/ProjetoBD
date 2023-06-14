@@ -30,25 +30,6 @@ class CRUD {
     }
 
     async registerPurchase(userId, month, boughtProducts) {
-        /*
-        var newPurchase = await database.query(
-            `INSERT INTO purchase (user_id) 
-            VALUES (${userId})
-            RETURNING id;`
-        );
-
-        boughtProducts.forEach(async (boughtProduct) => {
-            await database.query(
-                `INSERT INTO purchase_products (purchase_id, product_id, count) 
-                VALUES (${newPurchase.rows[0].id}, ${boughtProduct.id}, ${boughtProduct.count});`
-            );
-            await database.query(
-                `UPDATE product
-                SET count = count - ${boughtProduct.count}
-                WHERE id = ${boughtProduct.id};`
-            );
-        });
-        */
         let productListQuery = '';
         for (let i in boughtProducts){
             productListQuery += `ROW(${boughtProducts[i].id}, ${boughtProducts[i].count})`;
@@ -59,7 +40,7 @@ class CRUD {
         // DEBUG
         console.log('Concatenated products: ' + productListQuery);
         await database.query(
-            `CALL make_purchase(${userId}, ${month}, ARRAY[ ${productListQuery} ]::purchase_products[]);`
+            `CALL make_purchase(${userId}, ${month}, ARRAY[ ${productListQuery} ]::product_list[]);`
         );
     }
 
