@@ -140,7 +140,7 @@ app.post('/purchases', async (req, res) => {
   try {
     const { userId, total, boughtProducts } = req.body;
     if (!userId || !total || !boughtProducts){
-      res.status()
+      res.status(400).json({ message: 'Parâmetros inválidos' })
     }
     const now = new Date();
     console.log('userId: ' + userId);
