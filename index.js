@@ -54,9 +54,9 @@ app.get('/users/reports', async (req, res) => {
   }
 });
 
-app.get('users/purchases/', async (req, res) => {
+app.get('users/purchases/:id', async (req, res) => {
   try {
-    const { id } = req.body;
+    const { id } = req.params;
     const userPurchases = facade.getClientPurchases(id);
     res.json(userPurchases);
   } catch (error) {
@@ -64,9 +64,9 @@ app.get('users/purchases/', async (req, res) => {
   }
 });
 
-app.get('purchase/products', async (req, res) => {
+app.get('purchase/products/:purchase_id', async (req, res) => {
   try {
-    const { purchase_id } = req.body;
+    const { purchase_id } = req.params;
     const products = facade.getPurchaseProducts(purchase_id);
     res.json(products);
   } catch (error) {
