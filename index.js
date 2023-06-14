@@ -48,7 +48,7 @@ app.get('/products/category/:category', async (req, res) => {
 app.get('/users/reports', async (req, res) => {
   try {
     const reports = await facade.getCurrentMonthReports();
-    res.json(reports);
+    res.json(reports.rows);
   } catch (error) {
     console.error(error.message);
     res.json(error.message);
