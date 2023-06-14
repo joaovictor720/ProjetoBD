@@ -61,6 +61,8 @@ ON p_list.product_id = Product.id
 WHERE p_list.purchase_id NOT NULL
 GROUP BY p_list.product_id;
 
+CREATE OR REPLACE FUNCTION get_monthly_report()
+
 CREATE OR REPLACE FUNCTION make_purchase(
     client_id INTEGER,
     purchase_month INTEGER,

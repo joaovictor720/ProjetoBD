@@ -59,7 +59,7 @@ class CRUD {
         // DEBUG
         console.log('Concatenated products: ' + productListQuery);
         await database.query(
-            `CALL make_purchase(${userId}, ${month}, ARRAY[ ${productListQuery} ]::purchase_products[])`
+            `CALL make_purchase(${userId}, ${month}, ARRAY[ ${productListQuery} ]::purchase_products[]);`
         );
     }
 
