@@ -57,7 +57,7 @@ app.get('/users/reports', async (req, res) => {
 app.get('users/purchases/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    const userPurchases = facade.getClientPurchases(id);
+    const userPurchases = await facade.getClientPurchases(id);
     res.json(userPurchases);
   } catch (error) {
     
@@ -67,7 +67,7 @@ app.get('users/purchases/:id', async (req, res) => {
 app.get('purchase/products/:purchase_id', async (req, res) => {
   try {
     const { purchase_id } = req.params;
-    const products = facade.getPurchaseProducts(purchase_id);
+    const products = await facade.getPurchaseProducts(purchase_id);
     res.json(products);
   } catch (error) {
     
