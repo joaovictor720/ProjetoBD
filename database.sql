@@ -64,7 +64,7 @@ GROUP BY p_list.product_id;
 CREATE OR REPLACE FUNCTION make_purchase(
     client_id INTEGER,
     purchase_month INTEGER,
-    bought_products purchase_product[]
+    bought_products purchase_products[]
 )
 RETURNS VOID
 AS $$
@@ -76,19 +76,21 @@ DECLARE
 BEGIN
 
 -- Verify if purchasing the products is possible
-FOREACH bought_product IN ARRAY bought_products
+--FOREACH bought_product IN ARRAY bought_products
+--LOOP
+FOR i IN array_lower(p_products, 1) .. array_upper(p_products, 1)
 LOOP
     SELECT count INTO available_amount
     FROM product
-    WHERE id = bought_product.product_id;
+    WHERE id = bought_products[i].product_id;
 
-    IF available_amount < bought_product.count THEN
-        RAISE EXCEPTION 'Insufficient amount available for product_id: %', bought_product.product_id;
+    IF available_amount < bought_products[i].count THEN
+        RAISE EXCEPTION 'Insufficient amount available for product_id: %', bought_products[i].product_id;
     END IF;
 
     SELECT price INTO product_price
     FROM product
-    WHERE id = bought_product.product_id;
+    WHERE id = bought_products[i].product_id;
     
     purchase_total = purchase_total + product_price;
 END LOOP;
@@ -99,10 +101,12 @@ VALUES (client_id, purchase_month, total)
 RETURNING purchase_id INTO purchase_id;
 
 -- Register the products bought in the purchase
-FOREACH bought_product IN ARRAY bought_products
+--FOREACH bought_product IN ARRAY bought_products
+--LOOP
+FOR i IN array_lower(p_products, 1) .. array_upper(p_products, 1)
 LOOP
     INSERT INTO purchase_products (purchase_id, product_id, count)
-    VALUES (purchase_id, bought_product.product_id, bought_product.count);
+    VALUES (purchase_id, bought_products[i].product_id, bought_products[i].count);
 END LOOP;
 END;
 $$ LANGUAGE plpgsql;

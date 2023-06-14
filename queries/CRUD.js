@@ -51,7 +51,7 @@ class CRUD {
         */
         let productListQuery = '';
         for (let i in boughtProducts){
-            productListQuery += `ROW(${boughtProducts[i].product_id}, ${boughtProducts[i].count})`;
+            productListQuery += `ROW(${boughtProducts[i].id}, ${boughtProducts[i].count})`;
             if (i < boughtProducts.length){
                 productListQuery += ', ';
             }
@@ -59,7 +59,7 @@ class CRUD {
         // DEBUG
         console.log('Concatenated products: ' + productListQuery);
         await database.query(
-            `CALL make_purchase(${userId}, ${month}, ARRAY[ ${productListQuery} ]::purchase_product[])`
+            `CALL make_purchase(${userId}, ${month}, ARRAY[ ${productListQuery} ]::purchase_products[])`
         );
     }
 
