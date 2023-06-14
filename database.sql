@@ -71,6 +71,8 @@ AS $$
 DECLARE
     available_amount INTEGER;
     purchase_id INTEGER;
+    product_price FLOAT;
+    purchase_total FLOAT;
 BEGIN
 
 -- Verify if purchasing the products is possible
@@ -83,11 +85,17 @@ LOOP
     IF available_amount < bought_product.count THEN
         RAISE EXCEPTION 'Insufficient amount available for product_id: %', bought_product.product_id;
     END IF;
+
+    SELECT price INTO product_price
+    FROM product
+    WHERE id = bought_product.product_id;
+    
+    purchase_total = purchase_total + product_price;
 END LOOP;
 
 -- Register a new purchase
-INSERT INTO purchase (user_id, month)
-VALUES (client_id, purchase_month)
+INSERT INTO purchase (user_id, month, total)
+VALUES (client_id, purchase_month, total)
 RETURNING purchase_id INTO purchase_id;
 
 -- Register the products bought in the purchase
