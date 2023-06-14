@@ -48,6 +48,7 @@ app.get('/products/category/:category', async (req, res) => {
 app.get('/users/reports', async (req, res) => {
   try {
     const reports = await facade.getCurrentMonthReports();
+    res.json(reports);
   } catch (error) {
     console.error(error.message);
     res.json(error.message);
@@ -58,7 +59,7 @@ app.get('/users/purchases/:id', async (req, res) => {
   try {
     const { id } = req.params;
     const userPurchases = await facade.getClientPurchases(id);
-    res.json(userPurchases);
+    res.json(userPurchases.rows);
   } catch (error) {
     
   }
@@ -68,7 +69,7 @@ app.get('/purchase/products/:purchase_id', async (req, res) => {
   try {
     const { purchase_id } = req.params;
     const products = await facade.getPurchaseProducts(purchase_id);
-    res.json(products);
+    res.json(products.rows);
   } catch (error) {
     
   }
@@ -102,7 +103,7 @@ app.post('/users', async (req, res) => {
   try {
     const { name, type, email, password, anime, team, hometown } = req.body;
     const newUser = await facade.registerUser(name, type, email, password, anime, team, hometown);
-    res.json(newUser);
+    res.json(newUser.rows[0]);
   } catch (error) {
     console.error(error.message);
     res.status(401).json({ message: 'Usuário já existe' });
@@ -126,6 +127,9 @@ app.post('/products', async (req, res) => {
 app.post('/purchases', async (req, res) => {
   try {
     const { userId, total, boughtProducts } = req.body;
+    if (!userId || !total || !boughtProducts){
+      res.status()
+    }
     const now = new Date();
     console.log('userId: ' + userId);
     console.log('boughtProducts: ' + boughtProducts);

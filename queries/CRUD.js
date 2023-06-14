@@ -18,7 +18,7 @@ class CRUD {
             console.error(error.message);
             registeredUser = { message: 'Usuário já existe' }
         }
-        return registeredUser.rows[0];
+        return registeredUser;
     }
 
     async registerProduct(name, price, category, color, size, count, city) {
@@ -93,19 +93,11 @@ class CRUD {
     }
 
     async getCurrentMonthReports(){
-        let currentMonth = new Date().getMonth();
+        let currentMonth = new Date().getMonth()+1;
         return await database.query(
             `SELECT *
             FROM monthly_report
             WHERE month = ${currentMonth};`
-        );
-    }
-
-    async getEmployeeMonthlyReport(employeeId) {
-        return await database.query(
-            `SELECT *
-            FROM monthly_report
-            WHERE E.id = ${employeeId};`
         );
     }
 
@@ -118,17 +110,16 @@ class CRUD {
     }
 
     async getClientPurchases(clientId) {
-        const purchases = await database.query(
+        return await database.query(
             `SELECT *
             FROM purchase
             WHERE user_id = ${clientId};`
         );
-        return purchases.rows;
     }
     
     async getPurchaseProducts(purchaseId){
-        const products = await database.query(
-            `SELECT Prod.id, Prod.name, Prod.price, Prod.category, Prod.color, Prod.size, Prod.city
+        return await database.query(
+            `SELECT Prod.id, Prod.name, Prod.price, Prod.category, Prod.color, Prod.size, Prod.city, p_list.count
             FROM purchase AS Purch
             INNER JOIN purchase_products AS p_list
             ON Purch.id = p_list.purchase_id
@@ -136,7 +127,6 @@ class CRUD {
             ON p_list.product_id = Prod.id
             WHERE Purch.id = ${purchaseId};`
         );
-        return products.rows;
     }
 
     /**
