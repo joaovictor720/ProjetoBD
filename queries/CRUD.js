@@ -18,7 +18,7 @@ class CRUD {
             console.error(error.message);
             registeredUser = { message: 'Usuário já existe' }
         }
-        return registeredUser.rows[0];
+        return registeredUser;
     }
 
     async registerProduct(name, price, category, color, size, count, city) {
@@ -29,25 +29,19 @@ class CRUD {
         );
     }
 
-    async registerPurchase(userId, boughtProducts) {
-        let newPurchase = await database.query(
-            `INSERT INTO purchase (user_id) 
-            VALUES (${userId})
-            RETURNING id;`
+    async registerPurchase(userId, month, total, boughtProducts) {
+        let productListQuery = '';
+        for (let i in boughtProducts){
+            productListQuery += `(${boughtProducts[i].id}, ${boughtProducts[i].count})`;
+            if (i < boughtProducts.length-1){
+                productListQuery += ', ';
+            }
+        }
+        // DEBUG
+        console.log('Concatenated products: ' + productListQuery);
+        await database.query(
+            `CALL make_purchase(${userId}, ${month}, ${total}, ARRAY[ ${productListQuery} ]::product_list[]);`
         );
-
-        boughtProducts.forEach(async (boughtProduct) => {
-            await database.query(
-                `INSERT INTO purchase_products (purchase_id, product_id, count) 
-                VALUES (${newPurchase.rows[0].id}, ${boughtProduct.id}, ${boughtProduct.count});`
-            );
-            await database.query(
-                `UPDATE product
-                SET count = count - ${boughtProduct.count}
-                WHERE id = ${boughtProduct.id};`
-            );
-        });
-        return newPurchase;
     }
 
     /**
@@ -99,7 +93,7 @@ class CRUD {
     }
 
     async getCurrentMonthReports(){
-        let currentMonth = new Date().getMonth();
+        let currentMonth = new Date().getMonth()+1;
         return await database.query(
             `SELECT *
             FROM monthly_report
@@ -107,11 +101,11 @@ class CRUD {
         );
     }
 
-    async getEmployeeMonthlyReport(employeeId) {
+    async getReportsByMonth(month){
         return await database.query(
             `SELECT *
             FROM monthly_report
-            WHERE E.id = ${employeeId};`
+            WHERE month = ${month};`
         );
     }
 
@@ -126,8 +120,20 @@ class CRUD {
     async getClientPurchases(clientId) {
         return await database.query(
             `SELECT *
-            FROM users
-            WHERE id = ${clientId};`
+            FROM purchase
+            WHERE user_id = ${clientId};`
+        );
+    }
+    
+    async getPurchaseProducts(purchaseId){
+        return await database.query(
+            `SELECT Prod.id, Prod.name, Prod.price, Prod.category, Prod.color, Prod.size, Prod.city, p_list.count
+            FROM purchase AS Purch
+            INNER JOIN purchase_products AS p_list
+            ON Purch.id = p_list.purchase_id
+            INNER JOIN product AS Prod
+            ON p_list.product_id = Prod.id
+            WHERE Purch.id = ${purchaseId};`
         );
     }
 

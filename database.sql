@@ -53,37 +53,69 @@ ALTER TABLE product ADD CONSTRAINT unique_product_name UNIQUE (name);
 ALTER TABLE product ALTER COLUMN size TYPE VARCHAR(2);
 ALTER TABLE product DROP CONSTRAINT unique_product_name;
 
-CREATE VIEW monthly_report(product_id, product_name, sold_count) AS
-SELECT Product.id, Product.name, COUNT(*) AS sold_count
+CREATE VIEW monthly_report AS
+SELECT Product.id AS product_id, Product.name AS product_name, Product.size, Purch.month, COUNT(*) AS sold_count
 FROM purchase_products AS p_list
-INNER JOIN product AS Product
-ON p_list.product_id = Product.id
-WHERE p_list.purchase_id NOT NULL
-GROUP BY p_list.product_id;
+INNER JOIN product AS Product ON p_list.product_id = Product.id
+INNER JOIN purchase AS Purch ON Purch.id = p_list.purchase_id
+WHERE p_list.purchase_id IS NOT NULL
+GROUP BY Product.id, Product.name, Purch.month;
 
-CREATE OR REPLACE FUNCTION get_monthly_report(month INTEGER, year INTEGER)
-    RETURNS TABLE (
-        product_name VARCHAR,
-        quantity_sold INTEGER,
-        partial_amount NUMERIC,
-        total_amount NUMERIC
-    )
+CREATE TYPE product_list AS (
+    product_id INTEGER,
+    count INTEGER
+);
+
+CREATE OR REPLACE PROCEDURE make_purchase(
+    client_id INTEGER,
+    purchase_month INTEGER,
+    purchase_total FLOAT,
+    bought_products product_list[]
+)
     AS $$
+    DECLARE
+        available_amount INTEGER;
+        purchase_id INTEGER;
+        product_price FLOAT;
+        --purchase_total FLOAT;
     BEGIN
-    RETURN QUERY
-    SELECT
-        p.product_name,
-        SUM(s.quantity) AS quantity_sold,
-        SUM(s.quantity * s.unit_price) AS partial_amount,
-        SUM(s.quantity * s.unit_price) OVER () AS total_amount
-    FROM
-        sales s
-    INNER JOIN
-        products p ON s.product_id = p.product_id
-    WHERE
-        EXTRACT(MONTH FROM s.sale_date) = month
-        AND EXTRACT(YEAR FROM s.sale_date) = year
-    GROUP BY
-        p.product_name;
+
+    -- Verify if purchasing the products is possible
+    --FOREACH bought_product IN ARRAY bought_products
+    --LOOP
+    FOR i IN array_lower(bought_products, 1) .. array_upper(bought_products, 1)
+    LOOP
+        SELECT count INTO available_amount
+        FROM product
+        WHERE id = bought_products[i].product_id;
+
+        IF available_amount < bought_products[i].count THEN
+            RAISE EXCEPTION 'Insufficient amount available for product_id: %', bought_products[i].product_id;
+        END IF;
+
+        SELECT price INTO product_price
+        FROM product
+        WHERE id = bought_products[i].product_id;
+        
+        --purchase_total := purchase_total + product_price;
+    END LOOP;
+
+    -- Register a new purchase
+    INSERT INTO purchase (user_id, month, total)
+    VALUES (client_id, purchase_month, purchase_total)
+    RETURNING id INTO purchase_id;
+
+    -- Register the products bought in the purchase
+    --FOREACH bought_product IN ARRAY bought_products
+    --LOOP
+    FOR i IN array_lower(bought_products, 1) .. array_upper(bought_products, 1)
+    LOOP
+        INSERT INTO purchase_products (purchase_id, product_id, count)
+        VALUES (purchase_id, bought_products[i].product_id, bought_products[i].count);
+
+        UPDATE product
+        SET count = count - bought_products[i].count
+        WHERE id = bought_products[i].product_id;
+    END LOOP;
     END;
 $$ LANGUAGE plpgsql;
